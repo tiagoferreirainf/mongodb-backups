@@ -1,0 +1,80 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>tf.project</groupId>
+        <artifactId>mongodump</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <artifactId>mongodump-dockerimage</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <application.groupId>tf.project</application.groupId>
+        <application.artifactId>mongodump-microservice</application.artifactId>
+        <application.version>1.0-SNAPSHOT</application.version>
+
+        <dockerio.registry>tiagoferreira2018</dockerio.registry>
+        <dockerio.name>mongodump</dockerio.name>
+
+        <spotify.dockerfile.version>1.4.13</spotify.dockerfile.version>
+        <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${application.groupId}</groupId>
+                                    <artifactId>${application.artifactId}</artifactId>
+                                    <version>${application.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <destFileName>app.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>dockerfile-maven-plugin</artifactId>
+                <version>${spotify.dockerfile.version}</version>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>push</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <repository>${dockerio.registry}/${dockerio.name}</repository>
+                    <tag>${project.version}</tag>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
