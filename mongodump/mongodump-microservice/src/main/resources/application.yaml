@@ -25,7 +25,7 @@ spring:
 
 mongodumper:
   scheduler:
-    active: true
+    enabled: false
     cronExpression: "0/20 * * ? * * *"
     custom.command:
     options:

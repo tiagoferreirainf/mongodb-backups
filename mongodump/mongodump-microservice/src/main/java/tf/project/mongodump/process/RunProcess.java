@@ -10,7 +10,7 @@ import java.io.InputStream;
 @Slf4j
 public class RunProcess {
 
-    public static void executeCommand(String command) throws RuntimeException{
+    public static String executeCommand(String command) throws RuntimeException{
         try {
             if(Strings.isBlank(command)){
                 log.error("Executing process command failed, since is empty");
@@ -27,7 +27,10 @@ public class RunProcess {
             }
 
             InputStream message = runtimeProcess.getInputStream();
-            log.debug("Command output message: {}", IOUtils.toString(message, "UTF-8"));
+            final String finalMessage = IOUtils.toString(message, "UTF-8");
+            log.debug("Command output message: {}", finalMessage);
+
+            return finalMessage;
         } catch (MongoDumperException e) {
             throw e;
         } catch (Exception e) {

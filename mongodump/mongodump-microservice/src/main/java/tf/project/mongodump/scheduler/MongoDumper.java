@@ -22,7 +22,7 @@ public class MongoDumper implements Job{
     private String customCommand;
 
     @Autowired
-    SchedulerCommand schedulerCommand;
+    private SchedulerCommand schedulerCommand;
 
     @SneakyThrows
     @Override

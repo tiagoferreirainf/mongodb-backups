@@ -1,15 +1,21 @@
 package tf.project.mongodump.handler;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import tf.project.mongodump.model.MongoCommand;
-import tf.project.mongodump.model.CommandDTO;
+import tf.project.mongodump.model.*;
+import tf.project.mongodump.model.dto.Backup;
+import tf.project.mongodump.model.dto.BackupsDTO;
+import tf.project.mongodump.model.dto.CommandDTO;
 import tf.project.mongodump.process.RunProcess;
 import tf.project.mongodump.utils.StringUtil;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -25,26 +31,50 @@ public class CommandHandler {
     private static final String OUT_OPTION = "--out=%s";
     private static final String URI_OPTION = "--uri=%s";
 
-    private void backupMongoDBData(CommandDTO commandDTO) throws MalformedURLException {
+    public String backupMongoDBData(CommandDTO commandDTO) {
         log.debug(commandDTO.toString());
 
-        StringBuilder builder = new StringBuilder("%s").append(" ")
-                .append(OUT_OPTION).append(" ").append(URI_OPTION);
+        final ApiCommand apiCommand = ApiCommand.builder()
+                .overridePath(commandDTO.getOverridePath())
+                .overrideURI(commandDTO.getOverrideMongoUri())
+                .useArchives(commandDTO.getUseArchive())
+                .useGZIP(commandDTO.getEnableGZIP())
+                .useOut(commandDTO.getUseOut())
+                .additionalOptions(commandDTO.getOptions())
+                .build();
 
-        if(commandDTO.getEnableGZIP()){
-            builder.append(GZIP_OPTION);
-        }
+        apiCommand.setUri(uri);
+        apiCommand.setBackupPath(archivePath);
 
-        if(Strings.isNotBlank(commandDTO.getOptions())){
-            builder.append(commandDTO.getOptions());
-        }
-
-        String tempCommand = builder.toString();
-
-        String action = MongoCommand.MONGODUMP.getValue();
-        String path = StringUtil.getFileName(commandDTO.getArchivePath());
-        String command = String.format(tempCommand, action, path, uri);
+        String command = apiCommand.getCommand(MongoCommand.MONGODUMP);
+        String generatedFile = apiCommand.getFinalPath();
         RunProcess.executeCommand(command);
+
+        return generatedFile;
     }
 
+    public BackupsDTO listMongoDBBackups() {
+        final String message = RunProcess.executeCommand("ls " + archivePath);
+        final List<String> archiveList = StringUtil.parseLsMessage(message, true);
+        List<Backup> backupList = new ArrayList<>();
+
+        for(String archive : archiveList){
+            backupList.add(new Backup(archive, StringUtil.convertToDate(archive)));
+        }
+
+        return BackupsDTO.builder().backupList(backupList).backupPath(archivePath).build();
+    }
+
+    public byte[] downloadBackup(String id) throws IOException {
+        Path path = Paths.get(archivePath + "/" + id);
+        return Files.readAllBytes(path);
+    }
+
+    public void deleteBackup(String id) {
+        RunProcess.executeCommand("rm -f " + archivePath + "/" + id);
+    }
+
+    public void deleteAllBackup() {
+        RunProcess.executeCommand("rm -rf " + archivePath);
+    }
 }

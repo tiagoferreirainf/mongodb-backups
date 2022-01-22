@@ -1,4 +1,4 @@
-package tf.project.mongodump.model;
+package tf.project.mongodump.model.dto;
 
 
 import lombok.*;
@@ -14,7 +14,10 @@ import java.io.Serializable;
 @ToString
 @Builder
 public class CommandDTO implements Serializable {
-    private String archivePath;
+    private String overridePath;
+    private String overrideMongoUri;
+    private Boolean useArchive;
+    private Boolean useOut;
     private Boolean enableGZIP;
     private String options;
 }
