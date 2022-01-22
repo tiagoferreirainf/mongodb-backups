@@ -1,21 +1,29 @@
 package tf.project.mongodump.model;
 
-public enum Command {
-    MONGODUMP("mongodump"),
-    MONGOEXPORT("mongoexport"),
-    MONGOFILES("mongofiles"),
-    MONGOIMPORT("mongoimport"),
-    MONGORESTORE("mongorestore"),
-    MONGOSTAT("mongostat"),
-    MONGOTOP("mongotop");
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-    private String value;
+@Component
+@Slf4j
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class Command {
+    @Value("${mongodumper.defaults.backups.path}")
+    protected String backupPath;
 
-    Command(String value) {
-        this.value = value;
-    }
+    @Value("${mongodumper.mongodb.uri}")
+    protected String uri;
 
-    public String getValue(){
-        return this.value;
-    }
+    protected MongoCommand action;
+
+    protected static final String GZIP_OPTION = "--gzip";
+    protected static final String OUT_OPTION = "--out=%s";
+    protected static final String URI_OPTION = "--uri=%s";
+    protected static final String ARCHIVE_OPTION = "--archive=%s";
+    protected static final String ARCHIVE_EXTENSION = ".archive";
 }

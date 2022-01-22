@@ -27,10 +27,7 @@ public class RunProcess {
             }
 
             InputStream message = runtimeProcess.getInputStream();
-            log.debug(IOUtils.toString(message, "UTF-8"));
-
-            //TODO: targz output and remove sources
-
+            log.debug("Command output message: {}", IOUtils.toString(message, "UTF-8"));
         } catch (MongoDumperException e) {
             throw e;
         } catch (Exception e) {

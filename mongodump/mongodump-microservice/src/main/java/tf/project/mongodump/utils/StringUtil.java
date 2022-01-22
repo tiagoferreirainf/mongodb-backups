@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public class StringUtil {
 
-    private static final String PREFIX = "archive_";
+    private static final String PREFIX = "";
     private static final String DEFAULT_ARCHIVE_PATH = "./mongobackups/";
 
     public static String getFileName(String archivePath){

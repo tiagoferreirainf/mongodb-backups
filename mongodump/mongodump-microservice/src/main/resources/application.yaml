@@ -27,17 +27,17 @@ mongodumper:
   scheduler:
     active: true
     cronExpression: "0/20 * * ? * * *"
-  custom.command:
-  #options:
-  #  archive:
-  #    enabled: true
-  #    path: "./target/mongobackups/"
-  #  out:
-  #    enabled: true
-  #    path: "./target/mongobackups/"
-  #  gzip:
-  #    enabled: true
-  archive:
-    path: "./target/mongobackups/"
+    custom.command:
+    options:
+      #automatically add additional options to dump scheduler (Empty by default)
+      additional:
+      enabled:
+        #if archive is enabled out cannot be (Archive will take preference)
+        archive: true
+        out: false
+        gzip: true
+  defaults:
+    backups:
+      path: "./target/mongobackups/"
   mongodb:
     uri: "mongodb://localhost:27017/"

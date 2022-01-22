@@ -4,13 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import tf.project.mongodump.model.Command;
+import tf.project.mongodump.model.MongoCommand;
 import tf.project.mongodump.model.CommandDTO;
 import tf.project.mongodump.process.RunProcess;
 import tf.project.mongodump.utils.StringUtil;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 
 @Slf4j
 @Component
@@ -19,7 +18,7 @@ public class CommandHandler {
     @Value("${mongodumper.mongodb.uri}")
     private String uri;
 
-    @Value("${mongodumper.archive.path}")
+    @Value("${mongodumper.defaults.backups.path}")
     private String archivePath;
 
     private static final String GZIP_OPTION = "--gzip";
@@ -42,7 +41,7 @@ public class CommandHandler {
 
         String tempCommand = builder.toString();
 
-        String action = Command.MONGODUMP.getValue();
+        String action = MongoCommand.MONGODUMP.getValue();
         String path = StringUtil.getFileName(commandDTO.getArchivePath());
         String command = String.format(tempCommand, action, path, uri);
         RunProcess.executeCommand(command);
