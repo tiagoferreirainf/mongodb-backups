@@ -1,1 +1,43 @@
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    tf.project.mongodump: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    file: "%d %p %c{1.} [%t] %m%n"
 
+spring:
+  profiles:
+    active: ${RUNMODE:local}
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org.quartz:
+        scheduler:
+          instanceId: AUTO
+        threadPool:
+          threadCount: 5
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+mongodumper:
+  scheduler:
+    active: true
+    cronExpression: "0/20 * * ? * * *"
+  custom.command:
+  #options:
+  #  archive:
+  #    enabled: true
+  #    path: "./target/mongobackups/"
+  #  out:
+  #    enabled: true
+  #    path: "./target/mongobackups/"
+  #  gzip:
+  #    enabled: true
+  archive:
+    path: "./target/mongobackups/"
+  mongodb:
+    uri: "mongodb://localhost:27017/"

@@ -1,0 +1,7 @@
+mongodumper:
+  scheduler:
+    active: false
+  archive:
+    path: "./target/mongobackups/"
+  mongodb:
+    uri: "mongodb://localhost:27017/"
